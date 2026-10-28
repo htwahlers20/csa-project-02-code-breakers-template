@@ -11,8 +11,13 @@ public class CodeBreakers {
      * @return true if ch contains exactly one capital A-Z letter; false otherwise
      */
     public static boolean isLetter(String ch) {
+        boolean outcome = false;
+        if (ch.length() == 1 && ALPHABET.indexOf(ch) >= 0)
+        {
+            outcome = true;
+        }
 
-        return false;
+        return outcome;
     }
 
     /**
@@ -25,8 +30,16 @@ public class CodeBreakers {
      * @return the shifted capital letter, or ch unchanged if it is not A-Z
      */
     public static String shiftLetter(String ch, int shift) {
+        String complete = ch;
+        int pos = ALPHABET.indexOf(ch);
+        int newPos = pos + shift % 26;
+        if (newPos < 0)
+        {
+            newPos = newPos + 26;
+        }
+        complete = ALPHABET.substring(newPos, newPos + 1);
 
-        return ch;
+        return complete;
     }
 
     /**
@@ -40,9 +53,16 @@ public class CodeBreakers {
      * @return the transformed string, with the same length as message;
      *         an empty message returns an empty string
      */
-    public static String encrypt(String message, int shift) {
+    public static String encrypt(String message, int shift) 
+    {   
+        String done = "";
+        for (int i = 0; i < message.length(); i ++)
+        {
+            String ch = message.substring(i, i + 1);
+            done = done + shiftLetter(ch, shift);
+        }
 
-        return message;
+        return done;
     }
 
     /**
@@ -56,8 +76,11 @@ public class CodeBreakers {
      *         decrypt(encrypt(text, shift), shift) returns the original text
      */
     public static String decrypt(String message, int shift) {
+        int newShift = shift % 26;
+        
 
-        return message;
+
+        return encrypt(message, -newShift);
     }
 
     public static void main(String[] args) {
