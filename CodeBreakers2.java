@@ -153,7 +153,7 @@ public class CodeBreakers2 {
                 if (count % 3 == 0)
                 {
                     newSpot = newSpot + hundreds;
-                        //done =  done + ALPHABET.substring(newSpot, newSpot + 1);
+                        
                         
 
 
@@ -164,12 +164,12 @@ public class CodeBreakers2 {
                 else if (count % 3 == 1)
                 {
                     newSpot = newSpot + tens;
-                        //done =  done + ALPHABET.substring(newSpot, newSpot + 1); 
+                        
                 }
                 else if (count % 3 == 2)
                 {
                     newSpot = newSpot + ones;
-                        //done =  done + ALPHABET.substring(newSpot, newSpot + 1);
+                        
                 }
                 count += 1;
                 if (newSpot > 25)
