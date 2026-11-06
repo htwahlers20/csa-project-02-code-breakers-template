@@ -1,28 +1,24 @@
 
 import java.util.Scanner;
 
-
-
 /**
-
+ * 
  * Code Breakers — Iteration 2 starter.
-
+ * 
  * Copy your four completed Iteration 1 method bodies into this file.
-
- * Complete reverse and repeatingThreeKeyShift. Keep the driver and checks unchanged.
-
+ * 
+ * Complete reverse and repeatingThreeKeyShift. Keep the driver and checks
+ * unchanged.
+ * 
  */
 
 public class CodeBreakers2 {
 
-public static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    public static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-
-
-  public static boolean isLetter(String ch) {
+    public static boolean isLetter(String ch) {
         boolean outcome = false;
-        if (ch.length() == 1 && ALPHABET.indexOf(ch) >= 0)
-        {
+        if (ch.length() == 1 && ALPHABET.indexOf(ch) >= 0) {
             outcome = true;
         }
 
@@ -34,19 +30,34 @@ public static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
      * Positive shifts move forward; negative shifts move backward.
      * Precondition: ch is not null and has length 1. shift may be any int,
      * including Integer.MIN_VALUE and Integer.MAX_VALUE.
-     * @param ch the single character to shift
+     * 
+     * @param ch    the single character to shift
      * @param shift the signed number of alphabet positions to move
      * @return the shifted capital letter, or ch unchanged if it is not A-Z
      */
     public static String shiftLetter(String ch, int shift) {
         String complete = ch;
         int pos = ALPHABET.indexOf(ch);
-        int newPos = pos + shift % 26;
-        if (newPos < 0)
+        int newPos = pos + shift;
+        int finalPos = newPos % 26;
+        if (!isLetter(ch))
         {
-            newPos = newPos + 26;
+            complete = ch;
+
         }
-        complete = ALPHABET.substring(newPos, newPos + 1);
+
+        else
+        {
+            if (finalPos > 25)
+            {
+                finalPos = finalPos - 26;
+            }
+            else if (finalPos < 0) {
+                finalPos = finalPos + 26;
+            }
+        
+        complete = ALPHABET.substring(finalPos, finalPos + 1);
+        }
 
         return complete;
     }
@@ -57,16 +68,15 @@ public static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
      * spaces and punctuation in their original positions.
      * Precondition: message is not null; an empty string is valid.
      * shift may be any int, including Integer.MIN_VALUE and Integer.MAX_VALUE.
+     * 
      * @param message the text to transform
-     * @param shift the signed number of alphabet positions to move
+     * @param shift   the signed number of alphabet positions to move
      * @return the transformed string, with the same length as message;
      *         an empty message returns an empty string
      */
-    public static String encrypt(String message, int shift) 
-    {   
+    public static String encrypt(String message, int shift) {
         String done = "";
-        for (int i = 0; i < message.length(); i ++)
-        {
+        for (int i = 0; i < message.length(); i++) {
             String ch = message.substring(i, i + 1);
             done = done + shiftLetter(ch, shift);
         }
@@ -79,349 +89,427 @@ public static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
      * Precondition: message is not null; an empty string is valid.
      * shift is the ORIGINAL signed encryption shift, not its opposite.
      * It may be any int, including Integer.MIN_VALUE and Integer.MAX_VALUE.
+     * 
      * @param message the ciphertext to decrypt
-     * @param shift the signed shift originally used to encrypt the message
+     * @param shift   the signed shift originally used to encrypt the message
      * @return the string with that shift undone, preserving nonletters and length;
      *         decrypt(encrypt(text, shift), shift) returns the original text
      */
     public static String decrypt(String message, int shift) {
         int newShift = shift % 26;
-        
-
 
         return encrypt(message, -newShift);
     }
-    public static String reverse(String text)
-    {
+
+    public static String reverse(String text) {
         String done = "";
-        for (int i = 0; i < text.length(); i++)
-        {
+        for (int i = 0; i < text.length(); i++) {
             int location = text.length() - 1 - i;
             String finished = text.substring(location, location + 1);
             done = done + finished;
 
-            
         }
-    
+
         return done;
     }
 
+    /**
+     * 
+     * Applies a repeating three-digit signed key to capital A-Z only.
+     * 
+     * Nonletters do not advance the key. Each call starts at the first digit.
+     * 
+     * text is not null; key is -999 through 999, with leading zeros allowed.
+     * 
+     */
+
+    public static String repeatingThreeKeyShift(String text, int key) {
+        
+        if (key < -999 || key > 999) {
+            throw new IllegalArgumentException("K: key must be -999 through 999.");
+        }
+        
+        int hundreds = key / 100;
+        int tens = (key / 10) % 10;
+        int ones = key % 10;
+            
+        
+        String done = "";
+        int count = 0;
 
+        for (int i = 0; i < text.length(); i++)
+        {   
+                
+            String word = text.substring(i, i + 1);
+                
+                
+            if (!isLetter(word))
+            {
+                done = done + word;
+            }
+            else 
+            {
+                int newSpot = ALPHABET.indexOf(word);
+                if (count % 3 == 0)
+                {
+                    newSpot = newSpot + hundreds;
+                        //done =  done + ALPHABET.substring(newSpot, newSpot + 1);
+                        
 
 
- /**
 
- * Applies a repeating three-digit signed key to capital A-Z only.
 
- * Nonletters do not advance the key. Each call starts at the first digit.
 
- * text is not null; key is -999 through 999, with leading zeros allowed.
+                }
+                else if (count % 3 == 1)
+                {
+                    newSpot = newSpot + tens;
+                        //done =  done + ALPHABET.substring(newSpot, newSpot + 1); 
+                }
+                else if (count % 3 == 2)
+                {
+                    newSpot = newSpot + ones;
+                        //done =  done + ALPHABET.substring(newSpot, newSpot + 1);
+                }
+                count += 1;
+                if (newSpot > 25)
+                {
+                    newSpot = newSpot - 26;
+                }
+                else if (newSpot < 0) {
+                    newSpot = newSpot + 26;
+                }
+                done =  done + ALPHABET.substring(newSpot, newSpot + 1);
 
- */
+                    
 
-public static String repeatingThreeKeyShift(String text, int key) {
 
-if (key < -999 || key > 999) {
+                
 
-throw new IllegalArgumentException("K: key must be -999 through 999.");
+            }
+        }
+                
 
-}
+                
 
-return text;
 
-}
 
 
 
- /** Validates the complete sequence, then applies it from left to right. */
 
-public static String applyTransformations(String text, String sequence) {
+            
 
-String[] operations = sequence.split(",", -1);
+            
 
-char[] kinds = new char[operations.length];
+        
+        
 
-int[] values = new int[operations.length];
+        
 
-for (int i = 0; i < operations.length; i++) {
+        
+            
+            
+        
+       
+            
+        
 
-String operation = operations[i].trim().toUpperCase(java.util.Locale.ROOT);
+        return done;
 
-if (operation.equals("R")) {
+    }
 
-kinds[i] = 'R';
+    /** Validates the complete sequence, then applies it from left to right. */
 
-} else if (operation.startsWith("C:") || operation.startsWith("K:")) {
+    public static String applyTransformations(String text, String sequence) {
 
-kinds[i] = operation.charAt(0);
+        String[] operations = sequence.split(",", -1);
 
-try {
+        char[] kinds = new char[operations.length];
 
-values[i] = Integer.parseInt(operation.substring(2).trim());
+        int[] values = new int[operations.length];
 
-} catch (NumberFormatException ex) {
+        for (int i = 0; i < operations.length; i++) {
 
-throw new IllegalArgumentException("Step " + (i + 1)
+            String operation = operations[i].trim().toUpperCase(java.util.Locale.ROOT);
 
-+ " needs a whole-number value within the int range.");
+            if (operation.equals("R")) {
 
-}
+                kinds[i] = 'R';
 
-if (kinds[i] == 'K' && (values[i] < -999 || values[i] > 999)) {
+            } else if (operation.startsWith("C:") || operation.startsWith("K:")) {
 
-throw new IllegalArgumentException("Step " + (i + 1)
+                kinds[i] = operation.charAt(0);
 
-+ " has a K: key outside -999 through 999.");
+                try {
 
-}
+                    values[i] = Integer.parseInt(operation.substring(2).trim());
 
-} else {
+                } catch (NumberFormatException ex) {
 
-throw new IllegalArgumentException("Step " + (i + 1)
+                    throw new IllegalArgumentException("Step " + (i + 1)
 
-+ " must be C:n, K:n or R; empty steps are not allowed.");
+                            + " needs a whole-number value within the int range.");
 
-}
+                }
 
-}
+                if (kinds[i] == 'K' && (values[i] < -999 || values[i] > 999)) {
 
-String result = text;
+                    throw new IllegalArgumentException("Step " + (i + 1)
 
-for (int i = 0; i < operations.length; i++) {
+                            + " has a K: key outside -999 through 999.");
 
-if (kinds[i] == 'C') result = encrypt(result, values[i]);
+                }
 
-else if (kinds[i] == 'K') result = repeatingThreeKeyShift(result, values[i]);
+            } else {
 
-else result = reverse(result);
+                throw new IllegalArgumentException("Step " + (i + 1)
 
-}
+                        + " must be C:n, K:n or R; empty steps are not allowed.");
 
-return result;
+            }
 
-}
+        }
 
+        String result = text;
 
+        for (int i = 0; i < operations.length; i++) {
 
-private static int passedChecks;
+            if (kinds[i] == 'C')
+                result = encrypt(result, values[i]);
 
-private static int totalChecks;
+            else if (kinds[i] == 'K')
+                result = repeatingThreeKeyShift(result, values[i]);
 
+            else
+                result = reverse(result);
 
+        }
 
-public static void main(String[] args) {
+        return result;
 
-Scanner input = new Scanner(System.in);
+    }
 
-System.out.println("Code Breakers — Iteration 2");
+    private static int passedChecks;
 
-System.out.println("Enter transformations in order, such as C:1, K:123, R.");
+    private static int totalChecks;
 
-String text = null;
+    public static void main(String[] args) {
 
-while (true) {
+        Scanner input = new Scanner(System.in);
 
-if (text == null) {
+        System.out.println("Code Breakers — Iteration 2");
 
-System.out.print("Message (or file:filename): ");
+        System.out.println("Enter transformations in order, such as C:1, K:123, R.");
 
-if (!input.hasNextLine()) break;
+        String text = null;
 
-String source = input.nextLine();
+        while (true) {
 
-if (source.startsWith("file:")) {
+            if (text == null) {
 
-try {
+                System.out.print("Message (or file:filename): ");
 
-text = new String(java.nio.file.Files.readAllBytes(
+                if (!input.hasNextLine())
+                    break;
 
-java.nio.file.Paths.get(source.substring(5).trim())),
+                String source = input.nextLine();
 
-java.nio.charset.StandardCharsets.UTF_8);
+                if (source.startsWith("file:")) {
 
-} catch (java.io.IOException | IllegalArgumentException ex) {
+                    try {
 
-System.out.println("Cannot read that file. Check its name and current folder.");
+                        text = new String(java.nio.file.Files.readAllBytes(
 
-continue;
+                                java.nio.file.Paths.get(source.substring(5).trim())),
 
-}
+                                java.nio.charset.StandardCharsets.UTF_8);
 
-} else text = source;
+                    } catch (java.io.IOException | IllegalArgumentException ex) {
 
-System.out.println("Current text: " + text);
+                        System.out.println("Cannot read that file. Check its name and current folder.");
 
-}
+                        continue;
 
-System.out.print("Transformations (C:n, K:n, R; new, tests, quit): ");
+                    }
 
-if (!input.hasNextLine()) break;
+                } else
+                    text = source;
 
-String sequence = input.nextLine().trim();
+                System.out.println("Current text: " + text);
 
-if (sequence.equalsIgnoreCase("quit")) break;
+            }
 
-if (sequence.equalsIgnoreCase("new")) { text = null; continue; }
+            System.out.print("Transformations (C:n, K:n, R; new, tests, quit): ");
 
-if (sequence.equalsIgnoreCase("tests")) { runChecks(); continue; }
+            if (!input.hasNextLine())
+                break;
 
-try {
+            String sequence = input.nextLine().trim();
 
-text = applyTransformations(text, sequence);
+            if (sequence.equalsIgnoreCase("quit"))
+                break;
 
-System.out.println("Result: " + text);
+            if (sequence.equalsIgnoreCase("new")) {
+                text = null;
+                continue;
+            }
 
-} catch (IllegalArgumentException ex) {
+            if (sequence.equalsIgnoreCase("tests")) {
+                runChecks();
+                continue;
+            }
 
-System.out.println("Invalid sequence. Use C:n, K:n or R, separated by commas.");
+            try {
 
-}
+                text = applyTransformations(text, sequence);
 
-}
+                System.out.println("Result: " + text);
 
-System.out.println("Goodbye.");
+            } catch (IllegalArgumentException ex) {
 
-}
+                System.out.println("Invalid sequence. Use C:n, K:n or R, separated by commas.");
 
+            }
 
+        }
 
-public static void runChecks() {
+        System.out.println("Goodbye.");
 
-passedChecks = 0;
+    }
 
-totalChecks = 0;
+    public static void runChecks() {
 
-check("letter A", "true", "" + isLetter("A"));
+        passedChecks = 0;
 
-check("letter Z", "true", "" + isLetter("Z"));
+        totalChecks = 0;
 
-check("lowercase", "false", "" + isLetter("a"));
+        check("letter A", "true", "" + isLetter("A"));
 
-check("two letters", "false", "" + isLetter("AB"));
+        check("letter Z", "true", "" + isLetter("Z"));
 
-check("empty letter", "false", "" + isLetter(""));
+        check("lowercase", "false", "" + isLetter("a"));
 
-check("digit", "false", "" + isLetter("7"));
+        check("two letters", "false", "" + isLetter("AB"));
 
-check("forward wrap", "A", shiftLetter("Z", 1));
+        check("empty letter", "false", "" + isLetter(""));
 
-check("backward wrap", "Z", shiftLetter("A", -1));
+        check("digit", "false", "" + isLetter("7"));
 
-check("large positive shift", "B", shiftLetter("A", 53));
+        check("forward wrap", "A", shiftLetter("Z", 1));
 
-check("large negative shift", "Z", shiftLetter("D", -30));
+        check("backward wrap", "Z", shiftLetter("A", -1));
 
-check("punctuation", "!", shiftLetter("!", 4));
+        check("large positive shift", "B", shiftLetter("A", 53));
 
-check("space", " ", shiftLetter(" ", -3));
+        check("large negative shift", "Z", shiftLetter("D", -30));
 
-check("zero shift", "A", shiftLetter("A", 0));
+        check("punctuation", "!", shiftLetter("!", 4));
 
-check("full cycle", "Z", shiftLetter("Z", 26));
+        check("space", " ", shiftLetter(" ", -3));
 
-check("encrypt example", "BA!", encrypt("AZ!", 1));
+        check("zero shift", "A", shiftLetter("A", 0));
 
-check("mixed characters", "BCD xyz 7!", encrypt("ABC xyz 7!", 1));
+        check("full cycle", "Z", shiftLetter("Z", 26));
 
-check("empty message", "", encrypt("", 5));
+        check("encrypt example", "BA!", encrypt("AZ!", 1));
 
-check("decrypt example", "AZ!", decrypt("BA!", 1));
+        check("mixed characters", "BCD xyz 7!", encrypt("ABC xyz 7!", 1));
 
-check("decrypt negative shift", "GO, TEAM!", decrypt("FN, SDZL!", -1));
+        check("empty message", "", encrypt("", 5));
 
-check("round trip", "THE MESSAGE, 7!", decrypt(encrypt("THE MESSAGE, 7!", 19), 19));
+        check("decrypt example", "AZ!", decrypt("BA!", 1));
 
-check("maximum int shift", "X", shiftLetter("A", Integer.MAX_VALUE));
+        check("decrypt negative shift", "GO, TEAM!", decrypt("FN, SDZL!", -1));
 
-check("minimum int shift", "C", shiftLetter("A", Integer.MIN_VALUE));
+        check("round trip", "THE MESSAGE, 7!", decrypt(encrypt("THE MESSAGE, 7!", 19), 19));
 
-check("minimum int decryption", "A", decrypt("C", Integer.MIN_VALUE));
+        check("maximum int shift", "X", shiftLetter("A", Integer.MAX_VALUE));
 
-check("reverse message", "!C BA", reverse("AB C!"));
+        check("minimum int shift", "C", shiftLetter("A", Integer.MIN_VALUE));
 
-check("reverse empty", "", reverse(""));
+        check("minimum int decryption", "A", decrypt("C", Integer.MIN_VALUE));
 
-check("reverse one character", "Z", reverse("Z"));
+        check("reverse message", "!C BA", reverse("AB C!"));
 
-check("reverse mixed text", "7!b A", reverse("A b!7"));
+        check("reverse empty", "", reverse(""));
 
-check("reverse twice", "AB C!", reverse(reverse("AB C!")));
+        check("reverse one character", "Z", reverse("Z"));
 
-check("repeating key example", "DCG DCG!", repeatingThreeKeyShift("ABC ABC!", 314));
+        check("reverse mixed text", "7!b A", reverse("A b!7"));
 
-check("key preserves mixed characters", "D bC!G7G", repeatingThreeKeyShift("A bB!C7D", 314));
+        check("reverse twice", "AB C!", reverse(reverse("AB C!")));
 
-check("key forward wrap", "YAC", repeatingThreeKeyShift("XYZ", 123));
+        check("repeating key example", "DCG DCG!", repeatingThreeKeyShift("ABC ABC!", 314));
 
-check("key backward wrap", "WWW", repeatingThreeKeyShift("XYZ", -123));
+        check("key preserves mixed characters", "D bC!G7G", repeatingThreeKeyShift("A bB!C7D", 314));
 
-check("leading zero key", "ABJDEM", repeatingThreeKeyShift("ABCDEF", 7));
+        check("key forward wrap", "YAC", repeatingThreeKeyShift("XYZ", 123));
 
-check("negative leading zero key", "ABCDEF", repeatingThreeKeyShift("ABJDEM", -7));
+        check("key backward wrap", "WWW", repeatingThreeKeyShift("XYZ", -123));
 
-check("zero key", "ABC xyz 7!", repeatingThreeKeyShift("ABC xyz 7!", 0));
+        check("leading zero key", "ABJDEM", repeatingThreeKeyShift("ABCDEF", 7));
 
-check("largest key", "JKL", repeatingThreeKeyShift("ABC", 999));
+        check("negative leading zero key", "ABCDEF", repeatingThreeKeyShift("ABJDEM", -7));
 
-check("smallest key", "RST", repeatingThreeKeyShift("ABC", -999));
+        check("zero key", "ABC xyz 7!", repeatingThreeKeyShift("ABC xyz 7!", 0));
 
-check("key empty message", "", repeatingThreeKeyShift("", 314));
+        check("largest key", "JKL", repeatingThreeKeyShift("ABC", 999));
 
-check("key nonletters only", "abc 7!", repeatingThreeKeyShift("abc 7!", 314));
+        check("smallest key", "RST", repeatingThreeKeyShift("ABC", -999));
 
-check("key one letter", "D", repeatingThreeKeyShift("A", 314));
+        check("key empty message", "", repeatingThreeKeyShift("", 314));
 
-check("key call resets position", "DD", repeatingThreeKeyShift("A", 314)
+        check("key nonletters only", "abc 7!", repeatingThreeKeyShift("abc 7!", 314));
 
-+ repeatingThreeKeyShift("A", 314));
+        check("key one letter", "D", repeatingThreeKeyShift("A", 314));
 
-check("key decrypt example", "ABC ABC!", repeatingThreeKeyShift("DCG DCG!", -314));
+        check("key call resets position", "DD", repeatingThreeKeyShift("A", 314)
 
-check("key round trip", "ZEBRA, abc 7!", repeatingThreeKeyShift(
+                + repeatingThreeKeyShift("A", 314));
 
-repeatingThreeKeyShift("ZEBRA, abc 7!", 907), -907));
+        check("key decrypt example", "ABC ABC!", repeatingThreeKeyShift("DCG DCG!", -314));
 
-check("sequence encryption", "!GEC", applyTransformations("ABC!", "C:1, K:123, R"));
+        check("key round trip", "ZEBRA, abc 7!", repeatingThreeKeyShift(
 
-check("sequence decryption", "ABC!", applyTransformations("!GEC", "R, K:-123, C:-1"));
+                repeatingThreeKeyShift("ZEBRA, abc 7!", 907), -907));
+        check("sequence encryption", "!GEC", applyTransformations("ABC!", "C:1, K:123, R"));
 
-check("sequence order", "!EEE", applyTransformations("ABC!", "C:1, R, K:123"));
+        check("sequence decryption", "ABC!", applyTransformations("!GEC", "R, K:-123, C:-1"));
 
-check("sequence repeats", "ABC!", applyTransformations("ABC!", "R,R,C:1,C:-1"));
+        check("sequence order", "!EEE", applyTransformations("ABC!", "C:1, R, K:123"));
 
-check("sequence whitespace and case", "!GEC", applyTransformations("ABC!", " c: 1 , k:123 , r "));
+        check("sequence repeats", "ABC!", applyTransformations("ABC!", "R,R,C:1,C:-1"));
 
-check("sequence leading zero key", "ABJDEM", applyTransformations("ABCDEF", "K:007"));
+        check("sequence whitespace and case", "!GEC", applyTransformations("ABC!", " c: 1 , k:123 , r "));
 
-check("sequence single transformation", "BA!", applyTransformations("AZ!", "C:1"));
+        check("sequence leading zero key", "ABJDEM", applyTransformations("ABCDEF", "K:007"));
 
-check("sequence empty message", "", applyTransformations("", "C:1,K:314,R"));
+        check("sequence single transformation", "BA!", applyTransformations("AZ!", "C:1"));
 
-check("sequence max int shift", "X", applyTransformations("A", "C:2147483647"));
+        check("sequence empty message", "", applyTransformations("", "C:1,K:314,R"));
 
-check("sequence min int shift", "C", applyTransformations("A", "C:-2147483648"));
+        check("sequence max int shift", "X", applyTransformations("A", "C:2147483647"));
 
-System.out.println("Checks: " + passedChecks + "/" + totalChecks + " passed.");
+        check("sequence min int shift", "C", applyTransformations("A", "C:-2147483648"));
 
-if (passedChecks != totalChecks) throw new AssertionError("Some supplied checks failed.");
+        System.out.println("Checks: " + passedChecks + "/" + totalChecks + " passed.");
 
-}
+        if (passedChecks != totalChecks)
+            throw new AssertionError("Some supplied checks failed.");
 
+    }
 
+    public static void check(String label, String expected, String actual) {
 
-public static void check(String label, String expected, String actual) {
+        totalChecks++;
 
-totalChecks++;
+        if (expected.equals(actual))
+            passedChecks++;
 
-if (expected.equals(actual)) passedChecks++;
+        System.out.println((expected.equals(actual) ? "PASS " : "FAIL ") + label
 
-System.out.println((expected.equals(actual) ? "PASS " : "FAIL ") + label
+                + ": expected [" + expected + "]; actual [" + actual + "]");
 
-+ ": expected [" + expected + "]; actual [" + actual + "]");
-
-}
-
-
-
+    }
 
 }
